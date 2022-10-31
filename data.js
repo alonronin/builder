@@ -22,7 +22,16 @@ export default {
       Navigation,
       {
         type: 'CustomComponent',
-        component: '() => <div className="p-4"><h1>Home</h1></div>',
+        component: `() => 
+<div className="p-4 flex flex-col gap-4">
+    <h1 className="font-bold text-2xl text-blue-600">Home</h1>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+        Asperiores beatae blanditiis dolorem excepturi iure, 
+        quaerat, quis similique tempore unde veritatis vero voluptatum. 
+        A deleniti eaque error expedita fugit perspiciatis, ratione?
+    </p>
+</div>`,
       },
     ],
   },
@@ -48,7 +57,7 @@ export default {
       {
         type: 'Page',
         data: 'https://jsonplaceholder.typicode.com/posts/{{ postId }}',
-        link: 'users',
+        link: 'posts',
       },
     ],
   },
@@ -84,7 +93,7 @@ export default {
         transform: {
           id: '{{id}}',
           title: '{{name}}',
-          body: '{{email}}',
+          body: '{{email}} - {{address.street}}, {{address.suite}}, {{address.city}}, {{address.zipcode}}',
         },
       },
     ],
