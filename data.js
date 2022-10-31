@@ -37,6 +37,7 @@ export default {
         element: {
           type: 'Item',
           tag: 'li',
+          link: 'posts',
         },
       },
     ],
@@ -47,10 +48,45 @@ export default {
       {
         type: 'Page',
         data: 'https://jsonplaceholder.typicode.com/posts/{{ postId }}',
+        link: 'users',
       },
     ],
   },
   '/users': {
-    items: [Navigation],
+    items: [
+      Navigation,
+      {
+        type: 'Repeater',
+        data: 'https://jsonplaceholder.typicode.com/users',
+        tag: 'ul',
+        className: 'p-4 flex flex-col gap-4',
+        transform: {
+          '{{#each $root}}': {
+            id: '{{id}}',
+            title: '{{name}}',
+          },
+        },
+        element: {
+          type: 'Item',
+          tag: 'li',
+          link: 'users',
+        },
+      },
+    ],
+  },
+  '/users/:userId': {
+    items: [
+      Navigation,
+      {
+        type: 'Page',
+        data: 'https://jsonplaceholder.typicode.com/users/{{ userId }}',
+        link: 'users',
+        transform: {
+          id: '{{id}}',
+          title: '{{name}}',
+          body: '{{email}}',
+        },
+      },
+    ],
   },
 };

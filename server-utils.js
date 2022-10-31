@@ -1,6 +1,7 @@
 import { transformAsync } from '@babel/core';
 import { match } from 'path-to-regexp';
 import compile from 'lodash.template';
+import { select } from 'stjs';
 
 export async function transpile(input) {
   const { code } = await transformAsync(input, {
@@ -12,6 +13,10 @@ export async function transpile(input) {
   });
 
   return code;
+}
+
+export function transform(input, template) {
+  return select(input).transformWith(template).root();
 }
 
 export const matchRoute = (pathname, routes = []) => {
@@ -54,14 +59,16 @@ export async function getData({ items, params }) {
         const url = getUrl(item.data, params);
 
         if (!cache.has(url)) {
-          const response = await fetch(url).then((r) => r.json());
+          let response = await fetch(url).then((r) => r.json());
+          if (item.transform) {
+            response = transform(response, item.transform);
+          }
+
           cache.set(url, response);
         }
 
         data = cache.get(url);
       }
-
-      console.log(data);
 
       return {
         ...item,

@@ -1,10 +1,10 @@
 import Link from 'next/link';
 
-export default function Page({ data: { id, title, body } }) {
+export default function Page({ data: { id, title, body }, link }) {
   return (
     <div key={id} className="flex flex-col gap-4 p-4">
       <nav>
-        <Link href="/posts">
+        <Link href={`/${link}`}>
           <a className="text-sm text-blue-500">Back</a>
         </Link>
       </nav>
