@@ -33,17 +33,30 @@ export const matchRoute = (pathname, routes = []) => {
   };
 };
 
-export function getUrl(url, params) {
-  const template = compile(url, {
+export function getCompiled(template, params) {
+  const fn = compile(template, {
     interpolate: /{{([\s\S]+?)}}/g,
   });
 
-  return template(params);
+  return fn(params);
+}
+
+export function compileObjectProps(obj, params) {
+  const newObj = Object.entries(obj).map(([key, value]) => {
+    return [
+      key,
+      typeof value === 'string'
+        ? getCompiled(value, params)
+        : compileObjectProps(value, params),
+    ];
+  });
+
+  return Object.fromEntries(newObj);
 }
 
 const cache = new Map();
 
-export async function getData({ items, params }) {
+export async function getData({ items, params, session }) {
   return await Promise.all(
     items?.map(async (item) => {
       if (item.type === 'CustomComponent') {
@@ -56,10 +69,24 @@ export async function getData({ items, params }) {
       let data = item.data || null;
 
       if (typeof item.data === 'string') {
-        const url = getUrl(item.data, params);
+        data = {
+          fetch: {
+            url: item.data,
+            method: 'get',
+          },
+        };
+      }
+
+      if (data?.fetch) {
+        let { url, method, ...rest } = data.fetch;
+        url = getCompiled(url, params);
+        rest = compileObjectProps(rest, { ...params, session });
 
         if (!cache.has(url)) {
-          let response = await fetch(url).then((r) => r.json());
+          let response = await fetch(url, {
+            method: method.toUpperCase(),
+            ...rest,
+          }).then((r) => r.json());
           if (item.transform) {
             response = transform(response, item.transform);
           }
