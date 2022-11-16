@@ -5,6 +5,10 @@ import Engine from '../components/Engine';
 export default Engine;
 
 export async function getServerSideProps({ resolvedUrl }) {
+  const session = {
+    token: '',
+  };
+
   try {
     const { route, params } = matchRoute(resolvedUrl, Object.keys(data));
 
